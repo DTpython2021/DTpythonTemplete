@@ -1,46 +1,68 @@
-# fastpages에서 블로그 시작하기
-Github Pages를 활용하여 기술블로그를 운영하기 위해서는 몇 가지 난관이 있습니다. 
-자료를 찾아보면 주로 Jekyll, Hugo, Hexo, Gatsby.JS 와 같이 낯설고 어려운 프레임워크을 사용해야 합니다.  
-커스터마이징을 하거나 기능을 추가하기 위해서는 html, CSS 또는 NodeJS 같은 프레임워크를 알아야 합니다.  
-그래서 간단하고 쉬운 플랫폼이 시간을 절약해 주기도 합니다.
-심플하게 기본만 딱 하는 테마로 fastpages가 있습니다.
+# open API 
+표준 웹 프로토콜을 이용하여 프로그램 개발에 사용할 수 있는 공개 API 입니다.  
+일반적으로 현실 세계에 있는 실제 데이터를 수집한 단체에서 개발자들이 개발하는 응용에서 사용할 수 있게 제공하고 있습니다.  
+이러한 OPEN API에서는 웹 쿼리로 검색 질의를 보내면 XML 문서 형태로 결과를 보내는 것이 일반적입니다.
 
-## 장점
-* 기존의 방식과 같이 markdown(.md) 파일로 블로그 포스트를 작성할 수 있습니다.
-* jupyter notebook(.ipynb) 파일까지도 그대로 블로그 포스트로 변환해 줍니다.
-* word 파일까지도 블로그 포스트로 변환해 줍니다.
-* 다른 프레임워크 기반 명령어가 따로 필요 없이, 그저 add, commit, push 명령어만으로 포스트를 간편하게 업데이트할 수 있습니다. 
-나머지는 Github Action을 배포과정 알아서 진행하기 때문입니다.
+## 파이썬을 이용한 Naver Open API 활용하기 – 시작하기(도서 검색) 
+Naver 검색 API를 이용하여 도서를 검색하는 간단한 콘솔 응용을 제작  
+### 1. 등록  
+1. 네이버 개발자센터에서  상단 Application 메뉴를 선택하고 팝업된 애플리케이션 등록을 선택하세요.   
+2. 애플리케이션 이름을 정하고 사용 API 중에서 검색을 선택하세요.
+3. 환경추가에서 WEB설정을 선택하시고 웹 서비스 URL을 입력하세요.
+4. 만약 웹 서비스 URL을 소유하고 있는 것이 없다면 http://sample.co.kr로 입력합니다.
+5. 등록하기 버튼을 클릭합니다.
+6. Open API를 사용하기 위해 발급한 ClientID와 ClientSecret을 확인할 수 있습니다.
+7. 네이버 개발자 센터의 [Document]=>서비스 API [검색]을 선택하세요.
+8. Open API는 XML 출력포멧 혹은 JSON 출력포멧으로 결과를 제공하고 있는데 이번 게시글에서는 json 출력포멧을 이용할 것입니다. 요청 URL 주소를 기록해 두세요.
 
-## 만들기 
-
-### 1. fastpages 블로그용 레포지토리 생성
- fastpages 공식 레포지토리에서 Use this template 버튼을 클릭하고 새로운 레포지토리를 생성합니다. 
- 이때, 레포지토리의 이름은 아무것이나 정해되 상관 없되, {계정명}.github.io는 피해야 합니다.  
-
-### 2. 새로운 Pull Request가 자동으로 생성
- “Initial Setup”이라는 새로운 Pull Request가 자동으로 생성된 것을 확인할 수 있습니다.  
+### 2. 사용 
+1. urllib.request를 임포트
+2. 애플리케이션의 클라이언트 ID와 secret을 변수에 설정
+```
+#애플리케이션 클라이언트 id 및 secret
+client_id = "[자신의 client id]"
+client_secret = "[자신의 client secret]"
+``` 
+  3. 도서 검색 url과 옵션을 설정하세요.
+  ```
+url = "https://openapi.naver.com/v1/search/book.json"
+option = "&display=3&sort=count"
+```   
+  4. 사용자로부터 입력받은 질의를 쿼리 문자열에 맞게 변환하세요.
+```
+query = "?query="+urllib.parse.quote(input("질의:"))
+```
+  5. 도서 검색 url과 검색 질의 및 옵션을 하나의 쿼리 문자열로 설정합니다.
+```
+url_query = url + query + option
+```
+  6. Open API에 검색 요청을 위한 개체를 설정합니다.
+  검색 요청을 위해 쿼리 문자열을 입력 인자로 Request 개체를 생성한 후에 클라이언트 id와 클라이언트 secret을 헤더에 추가합니다.
+  ```
+#Open API 검색 요청 개체 설정
+request = urllib.request.Request(url_query)
+request.add_header("X-Naver-Client-Id",client_id)
+request.add_header("X-Naver-Client-Secret",client_secret)
+```
+  7. 검색을 요청하고 검색 결과의 내용을 얻어와서 화면에 출력합니다.
+```
+#검색 요청 및 처리
+response = urllib.request.urlopen(request)
+rescode = response.getcode()
+```
+  8. 검색 요청한 결과가 200이면 정상적으로 성공한 것입니다.
+```
+if(rescode == 200):
  
-### 3. PR 가이드  
-* this utility (새탭으로 열기) 에서 `prive key`와 `public` 키를 생성합니다. 이때, 옵션은 `RSA`와 `4069`를 선택 후 “Generate SSH-Keys” 버튼을 클릭합니다.  
-* 두번째 주어진 링크에서 새 “New repository secret” 버튼을 클릭합니다. 
- Value 입력 칸에 앞서 생성한 `Private key` 전체를 복사하여 붙여넣습니다. Name 입력 칸에는 `SSH_DEPLOY_KEY`라고 입력하고 저장합니다.   
-* 세번째 링크에서는 “Add deploy key” 버튼을 클릭합니다.  
-앞서 생성한 `Public key`를 복사하여 붙여넣습니다. 이름은 아무렇게나 지정해도 된다고 합니다. 그리고 제일 아래 `Allow write access` 박스를 꼭 체크합니다.  
-* PR을 merge합니다. 이후 fastpages 블로그가 배포되는 과정은 Github actions에서 아래와 같이 확인할 수 있습니다.    
-
-### 4. 완료  
- 완료되면, {github username}.github.io/{레포지토리 이름} 에서 fastpages 기반의 블로그가 배포되었음을 확인할 수 있습니다.
-
----
-
-## fastpages를 통해서 블로그를 작성하기 위해서는 다음 파일들에 대해서 알아두어야 합니다. 
-* _config.yml: 블로그의 이름, Latex사용 여부, 미리보기 여부, 태그 보여주기 여부 등을 설정할 수 있는 파일입니다. 
-자신의 SNS계정 버튼도 추가할 수 있고, description, pagination의 갯수 등의 사항들도 설정할 수 있습니다.  
-* index.html: 블로그 메인 페이지에 보여지는 컨텐츠를 작성하는 파일입니다.   
-* _pages/about.md: 블로그의 자기소개 페이지 About페이지의 내용을 작성하는 파일입니다. markdown 포맷으로 작성하면 됩니다.  
-* 포스트를 저장하는 디렉토리는 다음 종류에 따라 달라지므로 디렉토리를 구분해서 작성하시면 됩니다. (_notebooks/ , _posts/ , _word/ , images/ )
-
-###  YYYY-mm-dd-{아무 이름} 형태로 작성되어야 fastpages가 이를 인식하고 파일을 html로 변환합니다.  
+    response_body = response.read()
+ 
+    print(response_body.decode('utf-8'))
+ 
+else:
+ 
+    print("Error code:"+rescode)
+```
 
 
+
+네이버 책 검색 결과를 출력해주는 REST API [https://developers.naver.com/docs/search/book/](https://developers.naver.com/docs/search/book/)
