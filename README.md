@@ -1,4 +1,4 @@
-# **GoldenLab Python**
+# **DT Python**
 
 #### 1. **`Colab`을 사용하여 코드 개발 환경을 만듭니다.**     
  * Colab을 사용하면 누구나 브라우저를 통해 임의의 Python 코드를 작성하고 실행할 수 있습니다. Colab은 특히 머신러닝, 데이터 분석 및 교육에 적합합니다. 
@@ -14,7 +14,5 @@
 
 #### < `수업자료` >
 깃허브의 주소는 [https://github.com/goldenlab/goldenlab24](https://github.com/goldenlab/goldenlab24) 입니다.   
-구글드라이브 공유 주소 [http://gg.gg/sbapython](http://gg.gg/sbapython)입니다.  
-
 
 감사합니다.
